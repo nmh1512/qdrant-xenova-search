@@ -1,0 +1,42 @@
+[
+  {
+    "id": "1",
+    "title": "Luật Đất đai 2024",
+    "content": "Quy định về quyền sử dụng đất, thu hồi đất và bồi thường hỗ trợ tái định cư. Luật này có hiệu lực từ ngày 01/01/2025.",
+    "source": "pdf",
+    "category": "law",
+    "page": 1
+  },
+  {
+    "id": "2",
+    "title": "Introduction to Machice Learning",
+    "content": "Machine learning is a subset of artificial intelligence that provides systems the ability to automatically learn and improve from experience.",
+    "source": "wiki",
+    "category": "tech",
+    "page": 5
+  },
+  {
+    "id": "3",
+    "title": "Chế độ ăn uống lành mạnh",
+    "content": "Một chế độ ăn uống cân bằng bao gồm nhiều trái cây, rau quả, ngũ cốc nguyên hạt và protein nạc giúp tăng cường sức khỏe tim mạch.",
+    "source": "blog",
+    "category": "health",
+    "page": 2
+  },
+  {
+    "id": "4",
+    "title": "Quy trình xin cấp sổ đỏ",
+    "content": "Các bước thực hiện thủ tục cấp Giấy chứng nhận quyền sử dụng đất tại cơ quan tài nguyên môi trường địa phương.",
+    "source": "law",
+    "category": "law",
+    "page": 10
+  },
+  {
+    "id": "5",
+    "title": "The Art of Programming",
+    "content": "Programming is not just about writing code; it's about solving problems and creating efficient algorithms to process data.",
+    "source": "book",
+    "category": "tech",
+    "page": 42
+  }
+]
