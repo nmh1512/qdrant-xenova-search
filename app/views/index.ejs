@@ -300,8 +300,8 @@
                 <div style="display: flex; gap: 20px;">
                     <!-- Avatar -->
                     <div style="flex-shrink: 0;">
-                        <% if (item.payload.photo) { %>
-                            <img src="<%= item.payload.photo %>" style="width: 65px; height: 65px; border-radius: 8px; object-fit: cover; border: 1px solid #eee;">
+                        <% if (item.dbData.photo) { %>
+                            <img src="<%= item.dbData.photo %>" style="width: 65px; height: 65px; border-radius: 8px; object-fit: cover; border: 1px solid #eee;">
                         <% } else { %>
                             <div style="width: 65px; height: 65px; border-radius: 8px; background: #f1f3f4; display: flex; align-items: center; justify-content: center; font-size: 24px;">👤</div>
                         <% } %>
@@ -309,36 +309,48 @@
 
                     <!-- Details -->
                     <div style="flex-grow: 1;">
-                        <a href="/candidate/<%= item.payload.userId %>" class="result-link">
-                            <h3 class="result-title"><%= item.payload.name %></h3>
+                        <a href="/candidate/<%= item.dbData.id %>" class="result-link">
+                            <h3 class="result-title"><%= item.dbData.name %></h3>
                         </a>
-                        <div style="font-size: 15px; font-weight: 500; color: #3c4043; margin-bottom: 8px;">
-                            🎯 <%= item.payload.position %>
+                        
+                        <div style="font-size: 15px; font-weight: 500; color: #1a73e8; margin-bottom: 8px;">
+                            🎯 <%= item.dbData.position %>
                         </div>
 
                         <div class="result-meta">
                             <span class="score-badge">Độ khớp: <%= (item.score * 100).toFixed(1) %>%</span>
-                            <span class="meta-tag">📍 <%= getLabel(item.payload.city_id, constants.locationMap) || 'Chưa cập nhật' %></span>
-                            <span class="meta-tag">💰 <%= constants.salaryMap[item.payload.salary] || 'Thỏa thuận' %></span>
-                            <span class="meta-tag">⏳ <%= constants.expMap[item.payload.experience] || 'Chưa rõ' %></span>
-                            <% const levelLabel = getLabel(item.payload.level, constants.levelMap); %>
-                            <% if (levelLabel) { %><span class="meta-tag">🎓 <%= levelLabel %></span><% } %>
-                            <% const typeLabel = getLabel(item.payload.work_type, constants.typeMap); %>
-                            <% if (typeLabel) { %><span class="meta-tag">🕒 <%= typeLabel %></span><% } %>
-                            <% const genderLabel = getLabel(item.payload.gender, constants.genderMap); %>
-                            <% if (genderLabel) { %><span class="meta-tag">👤 <%= genderLabel %></span><% } %>
+                            <% if (item.payload) { %>
+                                <span class="meta-tag">📍 <%= getLabel(item.payload.city_id, constants.locationMap) || 'Toàn quốc' %></span>
+                                <span class="meta-tag">💰 <%= constants.salaryMap[item.payload.salary] || 'Thỏa thuận' %></span>
+                                <span class="meta-tag">⏳ <%= constants.expMap[item.payload.experience] || 'Chưa có' %></span>
+                                <% const levelLabel = getLabel(item.payload.level, constants.levelMap); %>
+                                <% if (levelLabel) { %><span class="meta-tag">🎓 <%= levelLabel %></span><% } %>
+                                <% const typeLabel = getLabel(item.payload.work_type, constants.typeMap); %>
+                                <% if (typeLabel) { %><span class="meta-tag">🕒 <%= typeLabel %></span><% } %>
+                                <% const genderLabel = getLabel(item.payload.gender, constants.genderMap); %>
+                                <% if (genderLabel) { %><span class="meta-tag">👤 <%= genderLabel %></span><% } %>
+                            <% } %>
                         </div>
 
-                        <% const mappedSkillsLabel = getLabel(item.payload.skills, constants.skillsMap); %>
-                        <% if (mappedSkillsLabel) { %>
-                            <div style="font-size: 13px; color: #1967d2; background: #f8f9fa; display: inline-block; padding: 2px 8px; border-radius: 4px; margin: 8px 0;">
-                                🛠️ Kỹ năng: <%= mappedSkillsLabel %>
+                        <% if (item.dbData.about) { %>
+                            <div style="font-size: 14px; color: #3c4043; margin-top: 8px; line-height: 1.5;">
+                                <strong>Giới thiệu:</strong> <%= item.dbData.about %>
                             </div>
                         <% } %>
 
-                        <div class="result-snippet">
-                            <%= item.payload.content %>
-                        </div>
+                        <% const mappedSkillsLabel = getLabel(item.dbData.skills, constants.skillsMap); %>
+                        <% if (mappedSkillsLabel) { %>
+                            <div style="font-size: 13px; color: #1967d2; background: #f8f9fa; display: inline-block; padding: 4px 10px; border-radius: 4px; margin: 10px 0; border: 1px solid #e8f0fe;">
+                                🛠️ <strong>Kỹ năng:</strong> <%= mappedSkillsLabel %>
+                            </div>
+                        <% } %>
+
+                        <% if (item.dbData.skill_content) { %>
+                            <div class="result-snippet" style="margin-top: 10px; color: #4d5156; font-size: 14px;">
+                                <strong>Kinh nghiệm & Kỹ năng chi tiết:</strong><br>
+                                <%= item.dbData.skill_content.substring(0, 500) %><%= item.dbData.skill_content.length > 500 ? '...' : '' %>
+                            </div>
+                        <% } %>
                     </div>
                 </div>
             </div>
@@ -348,11 +360,12 @@
             <img src="https://www.gstatic.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" style="opacity: 0.2; margin-bottom: 20px;">
             <p>Không tìm thấy ứng viên nào phù hợp với yêu cầu của bạn.</p>
         </div>
-    <% } else { %>
+    <!-- <% } 
+    else { %>
         <div class="no-results" style="padding: 100px 20px;">
             <div style="font-size: 60px; margin-bottom: 20px;">🔍</div>
             <p style="font-size: 18px;">Nhập thế mạnh ứng viên hoặc vị trí công việc để bắt đầu.</p>
-        </div>
+        </div> -->
     <% } %>
 </main>
 

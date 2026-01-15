@@ -1,17 +1,9 @@
-# Sử dụng image có sẵn CUDA từ NVIDIA
-FROM nvidia/cuda:12.2.0-base-ubuntu22.04
-
-# Cài đặt Node.js
-RUN apt-get update && apt-get install -y curl
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-RUN apt-get install -y nodejs
+# Dockerfile
+FROM node:20-slim
 
 WORKDIR /app
 
-# Cài đặt các thư viện hệ thống cần cho ONNX Runtime GPU
-RUN apt-get update && apt-get install -y libgomp1
-
-# Cài đặt dependencies
+# Install dependencies
 COPY package*.json ./
 RUN npm install
 

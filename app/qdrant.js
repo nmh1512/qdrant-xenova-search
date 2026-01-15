@@ -17,24 +17,42 @@ async function initCollection() {
                 console.log(`Creating collection: ${COLLECTION_NAME}`);
                 await client.createCollection(COLLECTION_NAME, {
                     vectors: {
-                        size: 384, 
-                        distance: 'Cosine',
+                        position: { size: 384, distance: 'Cosine' },
+                        content: { size: 384, distance: 'Cosine' }
                     },
                 });
-
-                // Create text index for hybrid search (keyword matching)
-                await client.createPayloadIndex(COLLECTION_NAME, {
-                    field_name: 'content',
-                    field_schema: 'text',
-                    wait: true
-                });
             }
-            return; // Success
+
+            await ensureIndexes();
+            return; 
         } catch (error) {
             retries--;
-            console.error(`⚠️ Qdrant chưa sẵn sàng (${retries} lần thử lại còn lại):`, error.message);
+            console.error(`⚠️ Qdrant initialization error (${retries} retries left):`, error.message);
             if (retries === 0) throw error;
-            await new Promise(resolve => setTimeout(resolve, 3000)); // Chờ 3s trước khi thử lại
+            await new Promise(resolve => setTimeout(resolve, 3000));
+        }
+    }
+}
+
+async function ensureIndexes() {
+    const fields = [
+        { name: 'city_id', schema: 'keyword' },
+        { name: 'salary', schema: 'keyword' },
+        { name: 'experience', schema: 'keyword' },
+        { name: 'gender', schema: 'keyword' },
+        { name: 'work_type', schema: 'keyword' },
+        { name: 'level', schema: 'keyword' },
+        { name: 'professions', schema: 'keyword' }
+    ];
+
+    for (const field of fields) {
+        try {
+            await client.createPayloadIndex(COLLECTION_NAME, {
+                field_name: field.name,
+                field_schema: field.schema,
+                wait: true
+            });
+        } catch (e) {
         }
     }
 }

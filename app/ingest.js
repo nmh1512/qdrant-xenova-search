@@ -100,10 +100,10 @@ function createSearchableText(doc) {
     const mappedSkills = mapIdList(doc.skills, constants.skillsMap);
 
     const parts = [
-        doc.position,
+        `Vị trí công việc: ${doc.position}`,
         doc.about,
-        doc.skill_content,
-        mappedSkills ? `Kỹ năng: ${mappedSkills}` : ''
+        `Kỹ năng chuyên môn: ${doc.skill_content}`,
+        mappedSkills ? `Kỹ năng mềm: ${mappedSkills}` : ''
     ].filter(Boolean);
     
     // Use natural separators (.) and keep it clean for the paraphrase model
@@ -196,18 +196,21 @@ async function ingest() {
             for (const doc of candidates) {
                 try {
                     const textToEmbed = createSearchableText(doc);
-                    if (textToEmbed.length < 5) continue; 
+                    // if (textToEmbed.length < 5) continue; 
 
-                    const vector = await generateEmbedding(textToEmbed);
+                    const [positionVector, contentVector] = await Promise.all([
+                        generateEmbedding(doc.position || ''),
+                        generateEmbedding(textToEmbed)
+                    ]);
 
                     points.push({
                         id: doc.id,
-                        vector: vector,
+                        vector: {
+                            position: positionVector,
+                            content: contentVector
+                        },
                         payload: {
                             userId: doc.id,
-                            name: doc.name,
-                            photo: doc.photo,
-                            address: doc.address,
                             city_id: doc.city_ids ? doc.city_ids.toString().split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v)) : [],
                             salary: doc.salary,
                             experience: doc.experience,
@@ -215,7 +218,6 @@ async function ingest() {
                             level: doc.level,         
                             work_type: doc.work_types ? doc.work_types.toString().split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v)) : [], 
                             professions: doc.professions ? doc.professions.toString().split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v)) : [], 
-                            content: textToEmbed // Store full text for keyword matching
                         }
                     });
                 } catch (err) {
