@@ -17,9 +17,24 @@ async function initCollection() {
                 console.log(`Creating collection: ${COLLECTION_NAME}`);
                 await client.createCollection(COLLECTION_NAME, {
                     vectors: {
-                        position: { size: 384, distance: 'Cosine' },
-                        content: { size: 384, distance: 'Cosine' }
+                        position: { size: 384, distance: 'Cosine', on_disk: true },
+                        content: { size: 384, distance: 'Cosine', on_disk: true }
                     },
+                    hnsw_config: {
+                        m: 16,
+                        ef_construct: 100,
+                        on_disk: true // Use mmap for index to handle large scale
+                    },
+                    quantization_config: {
+                        scalar: {
+                            type: 'int8',
+                            quantile: 0.99,
+                            always_ram: true // Keep quantized vectors in RAM for speed
+                        }
+                    },
+                    optimizers_config: {
+                        memmap_threshold: 20000 // Move to disk earlier
+                    }
                 });
             }
 

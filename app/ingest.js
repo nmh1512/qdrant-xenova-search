@@ -210,12 +210,12 @@ async function ingest() {
                             content: contentVector
                         },
                         payload: {
-                            userId: doc.id,
+                            userId: parseInt(doc.id),
                             city_id: doc.city_ids ? doc.city_ids.toString().split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v)) : [],
-                            salary: doc.salary,
-                            experience: doc.experience,
-                            gender: doc.gender,        
-                            level: doc.level,         
+                            salary: parseInt(doc.salary),
+                            experience: parseInt(doc.experience),
+                            gender: parseInt(doc.gender),        
+                            level: parseInt(doc.level),         
                             work_type: doc.work_types ? doc.work_types.toString().split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v)) : [], 
                             professions: doc.professions ? doc.professions.toString().split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v)) : [], 
                         }

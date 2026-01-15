@@ -78,19 +78,38 @@ app.get('/search', async (req, res) => {
     }
 
     const filter = mustFilters.length > 0 ? { must: mustFilters } : undefined;
-
+    console.log("Filter: ", filter);
+    
     try {
         let searchResults = [];
         
-        if (query) {
+        // if (query) {
             const queryVector = await generateEmbedding(query);
-            // MULTI-VECTOR SEARCH: Fusing 'position' and 'content' for better prioritization
+
+            // let candidateIds = null;
+            // if (mustFilters.length > 0) {
+            //     const countResult = await client.count(COLLECTION_NAME, { filter: filter });
+            //     if (countResult.count < 2000 && countResult.count > 0) {
+            //         const scrollResult = await client.scroll(COLLECTION_NAME, {
+            //             filter: filter,
+            //             limit: 2000,
+            //             with_vector: false,
+            //             with_payload: false
+            //         });
+            //         candidateIds = scrollResult.points.map(p => p.id);
+            //     }
+            // }
+
+            // const finalFilter = candidateIds 
+            //     ? { must: [{ key: 'id', match: { any: candidateIds } }] } 
+            //     : filter;
+
             const qdrantResults = await client.query(COLLECTION_NAME, {
                 prefetch: [
                     { 
                         query: queryVector,
                         using: 'position', 
-                        filter: filter,
+                        filter: filter, 
                         limit: 100
                     },
                     { 
@@ -129,7 +148,7 @@ app.get('/search', async (req, res) => {
                     dbData: mysqlDataMap[r.id]
                 })).filter(r => r.dbData); // Filter out any that might have been deleted from DB but exist in Qdrant
             }
-        } 
+        // } 
       
         res.render('index', { 
             results: searchResults, 
